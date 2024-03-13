@@ -30,8 +30,8 @@
             this.load.image('sky', 'assets/sky.png');
             this.load.image('ground', 'assets/platform.png');
             this.load.image('smallGround', 'assets/small_platform.png');
-            // this.load.image('star', 'assets/star.png');
-            // this.load.image('bomb', 'assets/bomb.png');
+            this.load.image('star', 'assets/star.png');
+            this.load.image('bomb', 'assets/bomb.png');
             this.load.spritesheet('dude', 'assets/dude.png', {
                 frameWidth: 32,
                 frameHeight: 48
@@ -39,6 +39,7 @@
         }
 
         var platforms;
+        var stars;
         var player;
         var cursors;
 
@@ -51,6 +52,18 @@
             platforms.create(700, 400, 'smallGround').setScale(.25).refreshBody();
             platforms.create(100, 275, 'smallGround').setScale(.25).refreshBody();
             platforms.create(750, 200, 'smallGround').setScale(.25).refreshBody();
+
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 9,
+                setXY: { x: 12, y: 0, stepX: 85 }
+            });
+
+            stars.children.iterate(function (child) {
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            });
+
+            this.physics.add.collider(stars, platforms);
 
             player = this.physics.add.sprite(100, 450, 'dude');
 
@@ -100,6 +113,13 @@
             if (cursors.up.isDown && player.body.touching.down) {
                 player.setVelocityY(-450);
             }
+
+            
+            this.physics.add.overlap(player, stars, collectStar, null, this);
+        }
+
+        function collectStar(player, star) {
+            star.disableBody(true, true);
         }
     </script>
 </body>
